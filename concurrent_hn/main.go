@@ -76,13 +76,25 @@ func getTopStories(numStories int) ([]item, error) {
 	if err != nil {
 		return nil, errors.New("failed to load top stories")
 	}
+	var stories []item
+	at := 0
+	for len(stories) < numStories {
+		need := (numStories - len(stories)) * 5 / 4
+		stories = append(stories, getStories(ids[at:at+need])...)
+		at += need
+	}
+	return stories[:numStories], nil
+}
+
+func getStories(ids []int) []item {
+	var client hn.Client
 	type result struct {
 		idx  int
 		item item
 		err  error
 	}
 	resultCh := make(chan result)
-	for i := 0; i < numStories; i++ {
+	for i := 0; i < len(ids); i++ {
 		go func(idx, id int) {
 			hnItem, err := client.GetItem(id)
 			if err != nil {
@@ -93,7 +105,7 @@ func getTopStories(numStories int) ([]item, error) {
 	}
 
 	var results []result
-	for i := 0; i < numStories; i++ {
+	for i := 0; i < len(ids); i++ {
 		results = append(results, <-resultCh)
 	}
 	sort.Slice(results, func(i, j int) bool {
@@ -109,5 +121,5 @@ func getTopStories(numStories int) ([]item, error) {
 			stories = append(stories, res.item)
 		}
 	}
-	return stories, nil
+	return stories
 }
