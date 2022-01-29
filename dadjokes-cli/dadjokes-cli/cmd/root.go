@@ -15,8 +15,6 @@ var rootCmd = &cobra.Command{
 	Use:   "dadjokes-cli",
 	Short: "Get random dad jokes in your terminal.",
 	Long:  `Dad jokes cli is a tool that gives you random dad jokes in your terminal`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
 }
 
